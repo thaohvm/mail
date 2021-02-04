@@ -30,33 +30,37 @@ function load_mailbox(mailbox) {
   document.querySelector('#compose-view').style.display = 'none';
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
-
+  
+  const mailTable = document.createElement('table');
+  mailTable.classList.add('table');
+  email_view.appendChild(mailTable);
+  
   fetch(`/emails/${mailbox}`)
     .then(response => response.json()
     .then(emails => {
       emails.forEach(function(email) {
-        const mail = document.createElement('div');
-        email_view.appendChild(mail);
+        const mail = document.createElement('tr');
+        mailTable.appendChild(mail);
+        
+        if (mailbox === "sent") {
+          const recipients = document.createElement('td');
+          recipients.innerHTML = `${email["recipients"].join(", ")}`;
+          mail.appendChild(recipients);
+        } else if (mailbox === "inbox") {
+          const sender = document.createElement('td');
+          sender.innerHTML = `${email["sender"]}`;
+          mail.appendChild(sender);
+        }
 
-        const sender = document.createElement('h5');
-        const senderText = document.createTextNode(email["sender"]);
-        sender.appendChild(senderText);
-        mail.appendChild(sender);
-
-        const subject = document.createElement('p');
-        const subjectText = document.createTextNode(email["subject"]);
-        subject.appendChild(subjectText);
+        const subject = document.createElement('td');
+        subject.innerHTML = `${email["subject"]}`;
+        
+        const timestamp = document.createElement('td');
+        timestamp.innerHTML = `${email["timestamp"]}`;
+        timestamp.style.color = "gray";
         mail.appendChild(subject);
-
-        const time = document.createElement('p');
-        const timeText = document.createTextNode(email["time"]);
-        time.appendChild(timeText);
-        mail.appendChild(time);
-
-        const id = document.createElement('p');
-        const idText = document.createTextNode(email["id"]);
-        id.appendChild(idText);
-        mail.appendChild(id);
+        mail.appendChild(timestamp);
+        
       })
     }))
   };
