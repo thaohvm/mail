@@ -43,6 +43,9 @@ function load_mailbox(mailbox) {
     .then(emails => {
       emails.forEach(function(email) {
         const mail = document.createElement('tr');
+        mail.addEventListener('click', function(){
+          load_email(email["id"]);
+        });
         mailTable.appendChild(mail);
         
         if (mailbox === "sent") {
@@ -58,7 +61,7 @@ function load_mailbox(mailbox) {
 
         const subject = document.createElement('td');
         subject.innerHTML = `${email["subject"]}`;
-        
+
         const timestamp = document.createElement('td');
         timestamp.innerHTML = `${email["timestamp"]}`;
         timestamp.style.color = "gray";
@@ -66,9 +69,10 @@ function load_mailbox(mailbox) {
 
         mail.appendChild(subject);
         mail.appendChild(timestamp);
-        
+
       })
     }))
+    .catch((error) => console.error(error));
   };
 
 function send_email(event) {
@@ -92,4 +96,8 @@ function send_email(event) {
       console.log("sent");
     })
     .catch((error) => console.log(error));
+}
+
+function load_email(id) {
+  console.log(id);
 }
