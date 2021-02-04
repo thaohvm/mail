@@ -33,6 +33,9 @@ function load_mailbox(mailbox) {
   
   const mailTable = document.createElement('table');
   mailTable.classList.add('table');
+  mailTable.classList.add('table-sm');
+  mailTable.classList.add('table-bordered');
+
   email_view.appendChild(mailTable);
   
   fetch(`/emails/${mailbox}`)
@@ -46,6 +49,7 @@ function load_mailbox(mailbox) {
           const recipients = document.createElement('td');
           recipients.innerHTML = `${email["recipients"].join(", ")}`;
           mail.appendChild(recipients);
+
         } else if (mailbox === "inbox") {
           const sender = document.createElement('td');
           sender.innerHTML = `${email["sender"]}`;
@@ -58,6 +62,8 @@ function load_mailbox(mailbox) {
         const timestamp = document.createElement('td');
         timestamp.innerHTML = `${email["timestamp"]}`;
         timestamp.style.color = "gray";
+        timestamp.style.textAlign = "right";
+
         mail.appendChild(subject);
         mail.appendChild(timestamp);
         
