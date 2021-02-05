@@ -27,6 +27,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = "none";
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
@@ -100,18 +101,17 @@ function send_email(event) {
 
 function load_email(id) {
   document.querySelector('#emails-view').style.display = "none";
-
-  const email_view = document.querySelector('#email-view');
-  email_view.style.display = "block";
+  document.querySelector('#email-view').style.display = "block";
 
   fetch(`/emails/${id}`)
     .then(response => response.json())
     .then(email => {
+      const email_view = document.querySelector('#email-view');
       email_view.innerHTML = `
-        <p><strong>From: </strong> ${email["sender"]}</p>
-        <p><strong>To: </strong> ${email["recipients"].join(", ")}</p>
-        <p><strong>Subject: </strong> ${email["subject"]}</p>
-        <p><strong>Timestamp: </strong> ${email["timestamp"]}</p>
+        <div><strong>From: </strong> ${email["sender"]}</div>
+        <div><strong>To: </strong> ${email["recipients"].join(", ")}</div>
+        <div><strong>Subject: </strong> ${email["subject"]}</div>
+        <div><strong>Timestamp: </strong> ${email["timestamp"]}</div>
         <button class="btn btn-sm btn-outline-primary" id="email-view-reply">Reply</button>
         <hr>
         <p>${email["body"]}</p>
