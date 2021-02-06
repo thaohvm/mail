@@ -1,3 +1,5 @@
+var curMailbox = "inbox";
+
 document.addEventListener('DOMContentLoaded', function () {
 
   // Use buttons to toggle between views
@@ -31,6 +33,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
+  curMailbox = mailbox;
   const mailTable = document.createElement('table');
   mailTable.classList.add('table');
   mailTable.classList.add('table-sm');
@@ -47,6 +50,9 @@ function load_mailbox(mailbox) {
           mail.addEventListener('click', function () {
             load_email(email["id"]);
           });
+          if (mailbox === "inbox" && email["read"]) {
+            mail.style.background = 'gray';
+          }
           mailTable.appendChild(mail);
 
           if (mailbox === "sent") {
@@ -113,6 +119,15 @@ function load_email(id) {
         <div><strong>Subject: </strong> ${email["subject"]}</div>
         <div><strong>Timestamp: </strong> ${email["timestamp"]}</div>
         <button class="btn btn-sm btn-outline-primary" id="email-view-reply">Reply</button>
+      `
+      if (curMailbox === "inbox") {
+        email_view.innerHTML += `
+        <button class="btn btn-sm btn-outline-primary" id="email-view-archive">${email["archived"] ? "Unarchive" : "Archive"}</button>
+        `
+        document.querySelector('#email-view-archive').addEventListener('click', () => archive_email(id, !email["archived"]));
+      }
+
+      email_view.innerHTML += `
         <hr>
         <p>${email["body"]}</p>
       `
@@ -131,4 +146,18 @@ function load_email(id) {
 
 function reply_email() {
   console.log("Reply clicked!")
+}
+
+function archive_email(id, archived) {
+  fetch(`emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      archived: archived
+    })
+  })
+    .then(result => {
+      load_email(id);
+      console.log(`archived: ${archived}`);
+    })
+    .catch((error) => console.log(error));
 }
