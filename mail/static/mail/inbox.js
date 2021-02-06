@@ -71,7 +71,7 @@ function load_mailbox(mailbox) {
 
           const timestamp = document.createElement('td');
           timestamp.innerHTML = `${email["timestamp"]}`;
-          timestamp.style.color = "gray";
+          timestamp.style.color = "black";
           timestamp.style.textAlign = "right";
 
           mail.appendChild(subject);
@@ -120,18 +120,20 @@ function load_email(id) {
         <div><strong>Timestamp: </strong> ${email["timestamp"]}</div>
         <button class="btn btn-sm btn-outline-primary" id="email-view-reply">Reply</button>
       `
-      if (curMailbox === "inbox") {
+      if (curMailbox === "inbox" || curMailbox === "archive") {
         email_view.innerHTML += `
         <button class="btn btn-sm btn-outline-primary" id="email-view-archive">${email["archived"] ? "Unarchive" : "Archive"}</button>
         `
-        document.querySelector('#email-view-archive').addEventListener('click', () => archive_email(id, !email["archived"]));
       }
-
       email_view.innerHTML += `
         <hr>
         <p>${email["body"]}</p>
       `
       document.querySelector('#email-view-reply').addEventListener('click', () => reply_email());
+      
+      if (curMailbox === "inbox" || curMailbox === "archive") {
+        document.querySelector('#email-view-archive').addEventListener('click', () => archive_email(id, !email["archived"]));
+      }
 
       // Mark email as read
       fetch(`/emails/${id}`, {
@@ -149,6 +151,7 @@ function reply_email() {
 }
 
 function archive_email(id, archived) {
+  console.log(`archived: ${archived}`);
   fetch(`emails/${id}`, {
     method: 'PUT',
     body: JSON.stringify({
@@ -156,8 +159,7 @@ function archive_email(id, archived) {
     })
   })
     .then(result => {
-      load_email(id);
-      console.log(`archived: ${archived}`);
+      load_mailbox("inbox");
     })
     .catch((error) => console.log(error));
 }
