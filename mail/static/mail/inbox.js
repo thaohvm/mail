@@ -129,7 +129,7 @@ function load_email(id) {
         <hr>
         <p>${email["body"]}</p>
       `
-      document.querySelector('#email-view-reply').addEventListener('click', () => reply_email());
+      document.querySelector('#email-view-reply').addEventListener('click', () => reply_email(id, email));
       
       if (curMailbox === "inbox" || curMailbox === "archive") {
         document.querySelector('#email-view-archive').addEventListener('click', () => archive_email(id, !email["archived"]));
@@ -146,8 +146,20 @@ function load_email(id) {
     .catch((error) => console.log(error));
 }
 
-function reply_email() {
-  console.log("Reply clicked!")
+function reply_email(id, email) {
+  compose_email()
+  document.querySelector('#email-view').style.display = 'none';
+  document.querySelector("#compose-recipients").value = email['sender'];
+  
+  if (email["subject"].startsWith("Re: ")) {
+    document.querySelector("#compose-subject").value = email['subject'];
+  } else {
+    document.querySelector("#compose-subject").value = 'Re: ' + email['subject'];
+  }
+  document.querySelector("#compose-body").value = `On ${email['timestamp']} ${email['sender']} wrote:
+${email['body']}
+------------------
+`
 }
 
 function archive_email(id, archived) {
